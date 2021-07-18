@@ -1,7 +1,9 @@
 import React from "react";
+import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
 import Header from './Header';
 import Main from './Main';
 import Footer from './Footer';
+import Login from './Login';
 import PopupWithForm from './PopupWithForm';
 import ImagePopup from './ImagePopup';
 import api from '../utils/api';
@@ -9,6 +11,7 @@ import {CurrentUserContext, defaultUser} from '../contexts/CurrentUserContext';
 import EditProfilePopup from './EditProfilePopup';
 import EditAvatarPopup from './EditAvatarPopup';
 import AddPlacePopup from './AddPlacePopup';
+
 
 function App() {
   const [isEditProfilePopupOpen, setEditProfilePopupOpen] = React.useState(false)
@@ -18,6 +21,7 @@ function App() {
   const [selectedCard, setSelectedCard] = React.useState({ img: null, title: null})
   const [currentUser, setCurrentUser] = React.useState(defaultUser)
   const [cards, setCards] = React.useState([])
+  const [loggedIn, setLoggedIn] = React.useState(false)
 
   React.useEffect(() => {
     api.getAllPromise().then((arg) => {
@@ -86,29 +90,42 @@ function App() {
       setCards((state) => state.map((c) => c._id === _id ? newCard : c));
   }).catch((err) => alert(err));
   } 
-  
+
 
   return (
-    <div className="page">
-      <CurrentUserContext.Provider value={currentUser}>
-        <Header />
-        <Main 
-        onEditProfile={handleEditProfileClick}
-        onAddPlace={handleAddPlaceClick}
-        onEditAvatar={handleEditAvatarClick}
-        onCardClick={handleCardClick}
-        cards={cards}
-        onCardLike={handleCardLike}
-        onCardDelete={handleCardDelete}
-        />
-        <Footer />
-        <EditProfilePopup isOpen={isEditProfilePopupOpen} onClose={closeAllPopups} onUpdateUser={handleUpdateUser} />
-        <AddPlacePopup isOpen={isAddPlacePopupOpen} onClose={closeAllPopups} onUpdateCard={handleAddPlaceSubmit} />
-        <EditAvatarPopup isOpen={isEditAvatarPopupOpen} onClose={closeAllPopups} onUpdateAvatar={handleUpdateAvatar} />
-        <PopupWithForm title="Вы уверены?" name="popup__form-avatar" buttonText="Да" />
-        <ImagePopup name="popupImage" onClose={closeAllPopups} card={selectedCard} isOpen={isEditImagePopupOpen} />
-      </CurrentUserContext.Provider>
-    </div>
+    <BrowserRouter>
+      <div className="page">
+        <CurrentUserContext.Provider value={currentUser}>
+          <Header />
+          {loggedIn}
+          <Switch>
+          <Route path="/mesto-react">
+          <Main 
+          onEditProfile={handleEditProfileClick}
+          onAddPlace={handleAddPlaceClick}
+          onEditAvatar={handleEditAvatarClick}
+          onCardClick={handleCardClick}
+          cards={cards}
+          onCardLike={handleCardLike}
+          onCardDelete={handleCardDelete}
+          />
+          <Footer />
+          <EditProfilePopup isOpen={isEditProfilePopupOpen} onClose={closeAllPopups} onUpdateUser={handleUpdateUser} />
+          <AddPlacePopup isOpen={isAddPlacePopupOpen} onClose={closeAllPopups} onUpdateCard={handleAddPlaceSubmit} />
+          <EditAvatarPopup isOpen={isEditAvatarPopupOpen} onClose={closeAllPopups} onUpdateAvatar={handleUpdateAvatar} />
+          <PopupWithForm title="Вы уверены?" name="popup__form-avatar" buttonText="Да" />
+          <ImagePopup name="popupImage" onClose={closeAllPopups} card={selectedCard} isOpen={isEditImagePopupOpen} />
+          </Route>
+          <Route path="/sign-in">
+            <Login />
+          </Route>
+          <Route exact path="/">
+            {loggedIn ? <Redirect to="/mesto-react" /> : <Redirect to="/sign-in" />}
+          </Route>
+          </Switch>
+        </CurrentUserContext.Provider>
+      </div>
+    </BrowserRouter>
   );
 }
 
