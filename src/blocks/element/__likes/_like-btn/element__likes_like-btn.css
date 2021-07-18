@@ -1,0 +1,18 @@
+.element__likes_like-btn {
+  width: 22px;
+  height: 19px;
+  border: none;
+  background-image: url(../../../../images/like.svg);
+  background-color: white;
+  padding: 0;
+  outline: none;
+  opacity: 1;
+  transition: opacity 0.4s ease-in-out;
+}
+.element__likes_like-btn:hover {
+  cursor: pointer;
+  opacity: 0.5;
+}
+.element__likes_like-btn:focus {
+  opacity: 1;
+}
