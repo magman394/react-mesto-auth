@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
+import { Route, Switch, Redirect, useHistory } from 'react-router-dom';
 import Header from './Header';
 import Main from './Main';
 import Footer from './Footer';
@@ -11,17 +11,23 @@ import {CurrentUserContext, defaultUser} from '../contexts/CurrentUserContext';
 import EditProfilePopup from './EditProfilePopup';
 import EditAvatarPopup from './EditAvatarPopup';
 import AddPlacePopup from './AddPlacePopup';
-
+import Register from "./Register";
+import ProtectedRoute from "./ProtectedRoute";
+import InfoTooltip from "./InfoTooltip";
+import auth from "../utils/auth"
 
 function App() {
   const [isEditProfilePopupOpen, setEditProfilePopupOpen] = React.useState(false)
   const [isAddPlacePopupOpen, setAddPlacePopupOpen] = React.useState(false)
   const [isEditAvatarPopupOpen, setEditAvatarPopupOpen] = React.useState(false)
   const [isEditImagePopupOpen, setEditImagePopupOpen] = React.useState(false)
+  const [isEditRegisterPopupOpen, setEditRegisterPopupOpen] = React.useState(false);
+  const [isAddRegister, setAddRegister] = React.useState(false);
   const [selectedCard, setSelectedCard] = React.useState({ img: null, title: null})
   const [currentUser, setCurrentUser] = React.useState(defaultUser)
   const [cards, setCards] = React.useState([])
   const [loggedIn, setLoggedIn] = React.useState(false)
+
 
   React.useEffect(() => {
     api.getAllPromise().then((arg) => {
@@ -41,11 +47,15 @@ function App() {
   const handleAddPlaceClick = () => {
     setAddPlacePopupOpen(true);
   }
+  let history = useHistory();
   const closeAllPopups = () => {
     setEditAvatarPopupOpen(false);
     setEditProfilePopupOpen(false);
     setAddPlacePopupOpen(false);
     setEditImagePopupOpen(false);
+    setEditRegisterPopupOpen(false);
+    if (isAddRegister === true)
+    history.push("/sign-in");
     setSelectedCard({ img: null, title: null})
   }
   const handleCardClick = (props) => {
@@ -76,6 +86,30 @@ function App() {
       setAddPlacePopupOpen(false);
     }).catch((err) => alert(err));
   }
+  
+
+  const handleRegisterSubmit = (onRegister) => {
+    auth.register(onRegister).then(() => {
+        setAddRegister(true);
+        setEditRegisterPopupOpen(true);
+    }).catch(() => {
+        setAddRegister(false);
+        setEditRegisterPopupOpen(true);
+    }); 
+    }
+    
+    const handleAuthorizeSubmit = (onLogin) => {
+    if (!onLogin){
+      return;
+    }
+    auth.authorize(onLogin)
+    .then((data) => {
+      if (data.token){
+        setLoggedIn(true);
+        history.push('/mesto-react');
+    }}).catch(err => console.log(err));
+    }
+
 
   function handleCardDelete(_id) {
     api.delmyCard(_id).then(() => {
@@ -93,12 +127,17 @@ function App() {
 
 
   return (
-    <BrowserRouter>
+
       <div className="page">
         <CurrentUserContext.Provider value={currentUser}>
           <Header />
           {loggedIn}
           <Switch>
+          <ProtectedRoute
+          path="/mesto-react"
+          loggedIn={loggedIn}
+          component={Main}
+        />
           <Route path="/mesto-react">
           <Main 
           onEditProfile={handleEditProfileClick}
@@ -117,16 +156,19 @@ function App() {
           <ImagePopup name="popupImage" onClose={closeAllPopups} card={selectedCard} isOpen={isEditImagePopupOpen} />
           </Route>
           <Route path="/sign-in">
-            <Login />
+            <Login onLogin={handleAuthorizeSubmit} />
+          </Route>
+          <Route path="/sign-up">
+            <Register onRegister={handleRegisterSubmit}/>
+            <InfoTooltip isOpen={isEditRegisterPopupOpen} isRegister={isAddRegister} onClose={closeAllPopups}/>
           </Route>
           <Route exact path="/">
-            {loggedIn ? <Redirect to="/mesto-react" /> : <Redirect to="/sign-in" />}
+            {loggedIn ? <Redirect to="/" /> : <Redirect to="/sign-up" />}
           </Route>
           </Switch>
         </CurrentUserContext.Provider>
       </div>
-    </BrowserRouter>
   );
 }
 
-export default App;
+export default App; 
