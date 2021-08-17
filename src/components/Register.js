@@ -19,23 +19,6 @@ class Register extends React.Component {
       [name]: value 
     });
   }
-//   handleSubmit(e){
-//     e.preventDefault()
-//     let { password, email } = this.state;
-//     auth.register(password, email).then((res) => {
-//         if(res){
-//           this.setState({
-//             message: ''
-//           }, () => {
-//             this.props.history.push('/sign-in');
-//           })
-//         } else {
-//           this.setState({
-//             message: 'Что-то пошло не так!'
-//           })
-//         }
-//       });
-// }
 
  handleSubmit(e) {
     e.preventDefault();

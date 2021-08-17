@@ -29,23 +29,23 @@ function App() {
   const [cards, setCards] = React.useState([])
   const [loggedIn, setLoggedIn] = React.useState(false)
 
-
+  let history = useHistory();
   React.useEffect(() => {
+    let jwt = localStorage.getItem('token');
+    auth.authorizeToken(jwt).then((res) => {
+      if(res) {
+        setSelectedEmail(res.data.email);
+        setLoggedIn(true);
+        history.push("/mesto-react");
+      } 
+    }).catch(()=> history.push("/sign-in"))
+
     api.getAllPromise().then((arg) => {
         const [getUserInfo, getCards] = arg;
         setCurrentUser(getUserInfo);
         setCards(getCards);
     }).catch((err) => alert(err));
-      const jwt = localStorage.getItem('token');
-          auth.authorizeToken(jwt).then((res) => {
-        if(res) {
-          setSelectedEmail(res.data.email);
-          setLoggedIn(true);
-          history.push("/mesto-react");
-        } 
-      })
-
-  }, [])
+  }, [loggedIn])
 
   const handleEditAvatarClick = () => {
     setEditAvatarPopupOpen(true);
@@ -56,7 +56,7 @@ function App() {
   const handleAddPlaceClick = () => {
     setAddPlacePopupOpen(true);
   }
-  let history = useHistory();
+
   const closeAllPopups = () => {
     setEditAvatarPopupOpen(false);
     setEditProfilePopupOpen(false);
@@ -122,6 +122,8 @@ function App() {
   });
   }
   function handleReloginSubmit() {
+    localStorage.removeItem('token');
+    history.push('/sing-in');
     setLoggedIn(false);
   }
 
