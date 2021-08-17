@@ -25,6 +25,7 @@ function App() {
   const [isAddRegister, setAddRegister] = React.useState(false);
   const [selectedCard, setSelectedCard] = React.useState({ img: null, title: null})
   const [currentUser, setCurrentUser] = React.useState(defaultUser)
+  const [selectedEmail, setSelectedEmail] = React.useState()
   const [cards, setCards] = React.useState([])
   const [loggedIn, setLoggedIn] = React.useState(false)
 
@@ -32,10 +33,18 @@ function App() {
   React.useEffect(() => {
     api.getAllPromise().then((arg) => {
         const [getUserInfo, getCards] = arg;
-        
         setCurrentUser(getUserInfo);
         setCards(getCards);
     }).catch((err) => alert(err));
+      const jwt = localStorage.getItem('token');
+          auth.authorizeToken(jwt).then((res) => {
+        if(res) {
+          setSelectedEmail(res.data.email);
+          setLoggedIn(true);
+          history.push("/mesto-react");
+        } 
+      })
+
   }, [])
 
   const handleEditAvatarClick = () => {
@@ -98,18 +107,23 @@ function App() {
     }); 
     }
     
-    const handleAuthorizeSubmit = (onLogin) => {
-    if (!onLogin){
-      return;
-    }
-    auth.authorize(onLogin)
-    .then((data) => {
-      if (data.token){
-        setLoggedIn(true);
-        history.push('/mesto-react');
-    }}).catch(err => console.log(err));
-    }
-
+  const handleAuthorizeSubmit = (onLogin) => {
+  if (!onLogin){
+    return;
+  }
+  auth.authorize(onLogin)
+  .then((data) => {
+    if (data.token){
+      setLoggedIn(true);
+      history.push('/mesto-react');
+  }}).catch(() => {
+    setLoggedIn(false);
+    setEditRegisterPopupOpen(true);
+  });
+  }
+  function handleReloginSubmit() {
+    setLoggedIn(false);
+  }
 
   function handleCardDelete(_id) {
     api.delmyCard(_id).then(() => {
@@ -130,16 +144,13 @@ function App() {
 
       <div className="page">
         <CurrentUserContext.Provider value={currentUser}>
-          <Header />
+          <Header loggedIn={loggedIn} Relogin={handleReloginSubmit} Email={selectedEmail}/>
           {loggedIn}
           <Switch>
           <ProtectedRoute
           path="/mesto-react"
           loggedIn={loggedIn}
           component={Main}
-        />
-          <Route path="/mesto-react">
-          <Main 
           onEditProfile={handleEditProfileClick}
           onAddPlace={handleAddPlaceClick}
           onEditAvatar={handleEditAvatarClick}
@@ -148,15 +159,10 @@ function App() {
           onCardLike={handleCardLike}
           onCardDelete={handleCardDelete}
           />
-          <Footer />
-          <EditProfilePopup isOpen={isEditProfilePopupOpen} onClose={closeAllPopups} onUpdateUser={handleUpdateUser} />
-          <AddPlacePopup isOpen={isAddPlacePopupOpen} onClose={closeAllPopups} onUpdateCard={handleAddPlaceSubmit} />
-          <EditAvatarPopup isOpen={isEditAvatarPopupOpen} onClose={closeAllPopups} onUpdateAvatar={handleUpdateAvatar} />
-          <PopupWithForm title="Вы уверены?" name="popup__form-avatar" buttonText="Да" />
-          <ImagePopup name="popupImage" onClose={closeAllPopups} card={selectedCard} isOpen={isEditImagePopupOpen} />
-          </Route>
+
           <Route path="/sign-in">
             <Login onLogin={handleAuthorizeSubmit} />
+            <InfoTooltip isOpen={isEditRegisterPopupOpen} isRegister={isAddRegister} onClose={closeAllPopups}/>
           </Route>
           <Route path="/sign-up">
             <Register onRegister={handleRegisterSubmit}/>
@@ -166,6 +172,14 @@ function App() {
             {loggedIn ? <Redirect to="/" /> : <Redirect to="/sign-up" />}
           </Route>
           </Switch>
+          <Route path="/mesto-react">
+          <Footer />
+          <EditProfilePopup isOpen={isEditProfilePopupOpen} onClose={closeAllPopups} onUpdateUser={handleUpdateUser} />
+          <AddPlacePopup isOpen={isAddPlacePopupOpen} onClose={closeAllPopups} onUpdateCard={handleAddPlaceSubmit} />
+          <EditAvatarPopup isOpen={isEditAvatarPopupOpen} onClose={closeAllPopups} onUpdateAvatar={handleUpdateAvatar} />
+          <PopupWithForm title="Вы уверены?" name="popup__form-avatar" buttonText="Да" />
+          <ImagePopup name="popupImage" onClose={closeAllPopups} card={selectedCard} isOpen={isEditImagePopupOpen} />
+          </Route>
         </CurrentUserContext.Provider>
       </div>
   );

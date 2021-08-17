@@ -47,6 +47,19 @@ authorize(onLogin) {
       })
       .catch(err => console.log(err))
 }
+authorizeToken(token) {
+
+  return fetch(`${this.url}/users/me`, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      }
+    })
+    .then(res => res.json())
+    .then(data => data)
+  } 
 }
 const auth = new Auth({
     url: 'https://auth.nomoreparties.co'
