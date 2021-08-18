@@ -2,9 +2,5 @@
     color: #fff;
     text-decoration: none;
     font-size: 24px;
-    margin-right: 15px;  
-}
-
-.menu__item:last-of-type {
-    margin-right: 0;
+    margin: 0 24px 0 0;
 }

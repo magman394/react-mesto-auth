@@ -61,3 +61,5 @@
 @import url(./blocks/menu/menu.css);
 @import url(./blocks/menu/__item/menu__item.css);
 @import url(./blocks/menu/__item/_active/menu__item_active.css);
+@import url(./blocks/menu/__logout/menu__logout.css);
+@import url(./blocks/menu/__auth-link/menu__auth-link.css);

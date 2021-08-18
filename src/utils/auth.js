@@ -38,14 +38,13 @@ authorize(onLogin) {
             "email": onLogin.email
         })
       })
-      .then((response => response.json()))
+      .then(res => this._getResponseData(res))
       .then((data) => {
         if (data.token){
           localStorage.setItem('token', data.token);
           return data;
         }
       })
-      .catch(err => console.log(err))
 }
 authorizeToken(token) {
 
@@ -57,8 +56,7 @@ authorizeToken(token) {
         'Authorization': `Bearer ${token}`,
       }
     })
-    .then(res => res.json())
-    .then(data => data)
+    .then(res => this._getResponseData(res))
   } 
 }
 const auth = new Auth({

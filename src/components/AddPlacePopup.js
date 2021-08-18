@@ -28,11 +28,37 @@ function AddPlacePopup({isOpen, onClose, onUpdateCard}) {
 
 
     return (
-      <PopupWithForm buttonText="Сохранить" onClose={onClose} isOpen={isOpen} title="Новое место" name="popupCard" onSubmit={handleSubmit} >
-        <input value={name} onChange={handleChangeTitle}  type="text" className="popup__input" minLength="2" maxLength="30" required placeholder="Название" id="inputTitle"/>
-        <span id="inputTitle-error" className="popup__error"></span>
-        <input value={link} onChange={handleChangeLink}  id="inputLink" type="url" className="popup__input" required placeholder="Ссылка на картинку"/>
-        <span id="inputLink-error" className="popup__error"></span>
+      <PopupWithForm
+        buttonText="Сохранить"
+        title="Новое место"
+        name="popupCard"
+        onClose={onClose}
+        isOpen={isOpen}
+        onSubmit={handleSubmit}
+      >
+        <input
+          value={name}
+          onChange={handleChangeTitle}
+          type="text"
+          className="popup__input"
+          minLength="2"
+          maxLength="30"
+          required placeholder="Название"
+          id="inputTitle"
+        />
+        <span 
+          id="inputTitle-error" 
+          className="popup__error">
+        </span>
+        <input
+          value={link}
+          onChange={handleChangeLink}
+          id="inputLink" type="url"
+          className="popup__input"
+          required placeholder="Ссылка на картинку"/>
+        <span
+          id="inputLink-error"
+          className="popup__error"></span>
       </PopupWithForm>
     )
 }
