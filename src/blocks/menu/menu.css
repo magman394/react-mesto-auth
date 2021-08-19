@@ -2,6 +2,12 @@
     display: flex;
     position: relative;
     left: 20px;
-    margin-bottom: 10px;
     font-family: 'Roboto';
 }
+
+@media (max-width: 680px) {
+    .menu {
+        left: 0;
+    }
+  }
+  

@@ -10,3 +10,9 @@
     min-width: 358px;
     min-height: 14px;
 }
+@media (max-width: 680px) {
+    .login__form {
+        min-width: 300px;
+    }
+  }
+  
