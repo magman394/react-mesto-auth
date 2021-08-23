@@ -49,7 +49,7 @@ function App() {
         if (res) {
           setSelectedEmail(res.data.email);
           setLoggedIn(true);
-          history.push("/mesto-react");
+          history.push("/react-mesto-auth");
         }
       })
       .catch(() => history.push("/sign-in"));
@@ -143,7 +143,7 @@ function App() {
       .then((data) => {
         if (data.token) {
           setLoggedIn(true);
-          history.push("/mesto-react");
+          history.push("/react-mesto-auth");
         }
       })
       .catch(() => {
@@ -189,7 +189,7 @@ function App() {
         {loggedIn}
         <Switch>
           <ProtectedRoute
-            path="/mesto-react"
+            path="/react-mesto-auth"
             loggedIn={loggedIn}
             component={Main}
             onEditProfile={handleEditProfileClick}
@@ -221,7 +221,7 @@ function App() {
             {loggedIn ? <Redirect to="/" /> : <Redirect to="/sign-up" />}
           </Route>
         </Switch>
-        <Route path="/mesto-react">
+        <Route path="/react-mesto-auth">
           <Footer />
           <EditProfilePopup
             isOpen={isEditProfilePopupOpen}

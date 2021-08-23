@@ -6,7 +6,7 @@ function Header(props) {
       <header className="header">
           <div className="header__logo"></div>
       <Switch>
-        <Route exact path='/mesto-react'>
+        <Route exact path='/react-mesto-auth'>
           <nav className='menu'>
             <p className='menu__item'>{props.Email}</p>
             <button className='menu__logout' onClick={props.Relogin}>
